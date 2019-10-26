@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Form Validation Exercise</title>
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<style>
+	body{
+		font-size: 10pt;
+		font-family: Verdana, Helvetica, sans-serif;
+		color: #003300;
+	}
+	h1{
+		font-size: 12pt;
+		text-align: center;
+	}
+	p{
+		margin: 0px 40px 20px 40px
+	}
+	td{
+		padding: 5px;
+	}
+	td.name{
+		text-align: right;
+	}
+	td.data{
+		text-align: left;
+	}
+
+	td.errormsg{
+		text-align:left;
+		visibility: hidden;
+	}
+
+	.error{
+		color:red;
+		margin-left:5px;
+	}
+
+</style>
+
+
+
+<script>
+
+
+	function validateForm(){
+		var name = document.getElementById("name_text").value;
+		var email = document.getElementById("email_text").value;
+		var date = document.getElementById("datepicker").value;
+		var gender = document.getElementById("select_gender").value;
+		var a1 = document.getElementById("addr1_text").value;
+		var a2 = document.getElementById("addr2_text").value;
+		var city = document.getElementById("city_text").value;
+		var zip = document.getElementById("zip_text").value;
+
+		var req_msg ="This field is required"
+
+		if(!name.checkValidity()){
+
+		}
+		if(!email.checkValidity()){
+			
+		}
+		if(!date.checkValidity()){
+			
+		}
+		if(!gender.checkValidity()){
+			
+		}
+		if(!a1.checkValidity()){
+			
+		}
+		if(!a2.checkValidity()){
+			
+		}
+		if(!city.checkValidity()){
+			
+		}
+		if(!zip.checkValidity()){
+			
+		}
+
+	}
+
+	function add(a,b) {return a+b;}
+
+
+	function isLeapYear(year){
+		return_value = true;
+
+	// There is no leap year if the year is not divisible by 4
+		if ((year % 4) != 0)
+			return_value = false;
+
+	// There is no leap year if the year is divisible by 100 but not 400
+		else if (((year % 100) == 0) & ((year % 400) != 0))
+			return_value = false;
+		
+		return return_value;
+	}
+
+	function notletter(input){
+		if (!/^[a-zA-Z]*$/g.test(input)) {
+    	    return true;
+    	}
+	}
+
+	function validate_email(input){
+		if (!/^[\w\-\.\+]+\@[a-zA-Z0-9\.\-]+\.[a-zA-Z0-9]{2,4}$/.test(input))
+			return true;
+	}
+
+	function validate_zip(input){
+		if (!/[a-z]+\s\d+$/.test(input))
+			return true;
+	}
+
+	function date_valid(d, m, y){
+		var days = [31,28,31,30,31,30,31,31,30,31,30,31];
+		if (m>13) return false;
+		if (m == 1 || m>2){
+			if (d>days[m-1])
+				return false;
+		}
+		if (m==2){
+			if (isLeapYear(y)&&(d<=29)) return true;
+			if(d>28) return false;
+		}
+		return true;
+	}
+
+	function date_future(date){
+		var now = new Date();
+		var bday = new Date(date);
+
+		if (now < bday) return true;
+		return false;
+	}
+
+	function usermsg(msg,id){
+		var m = document.getElementById(id);
+		m.innerHTML = msg;
+		m.style.visibility = "visible"
+	}
+
+	function erasemsg(id){
+		var m = document.getElementById(id);
+		m.style.visibility = "hidden"
+	}
+
+	$( function() {
+    	$( "#datepicker" ).datepicker({
+    		dateFormat:"dd/mm/yy"
+    	});
+    } );
+
+	$(document).ready(function(){
+			$(function() {
+
+		jQuery.validator.addMethod("lettersonly", function(value,element){
+			return this.optional(element) || /^[a-zA-Z]+$/i.test(value);
+		}, "Please enter letters only");
+
+		// jQuery.validator.addMethod("valid_date", function(value){
+		// 	var form = value.split("/")
+		// 	var d = form[0];
+		// 	var m = form[1];
+		// 	var y = form[2];
+		// 	var days = [31,28,31,30,31,30,31,31,30,31,30,31];
+		// 	if (m>13) return false;
+		// 	if (m == 1 || m>2){
+		// 		if (d>days[m-1])
+		// 			return false;
+		// 	}
+		// 	if (m==2){
+		// 		if (isLeapYear(y)&&(d<=29)) return true;
+		// 		if(d>28) return false;
+		// 	}
+		// 	return true;
+		// });
+
+		jQuery.validator.addMethod("past_date",function(value){
+			var now = new Date();
+			var form = value.split("/")
+			var d = form[0];
+			var m = form[1];
+			var y = form[2];
+			if (!date_valid(d,m,y)) return false;
+			var bday = new Date(y,m-1,d);
+			return bday.getTime() < now.getTime();
+		});
+
+		jQuery.validator.addMethod("zip_code", function(value, element){
+			return this.optional(element) || /[a-z]+\s\d+$/.test(value);
+		})
+
+		$("form[name='personal_info']").validate({
+			rules: {
+				name_text: {
+					required:true,
+					lettersonly:true
+				},
+				email_text: {
+					required: true,
+					email: true
+				},
+				dob_text:{
+					required:true,
+					past_date:true
+				},
+				select_gender:{
+					required:true
+				},
+				addr1_text : "required",
+				addr2_text : "required",
+				city_text:{
+					required:true,
+					lettersonly:true
+				},
+				zip_text:{
+					required:true,
+					zip_code:true
+				},
+			},
+			messages: {
+      			name_text: {
+      				required:"Please enter your name"
+      			},
+      			dob_text: {
+        			required: "Please enter your DOB",
+        			past_date:"Please enter valid date",
+      			},
+      			select_gender:"Please select your gender",
+      			email_text: "Please enter a valid email address",
+      			addr1_text:"Please enter your address",
+      			addr2_text:"Please enter your address",
+      			city_text:{
+      				required:"Please enter your city",
+      				lettersonly:"Please enter only letters"
+      			},
+      			zip_text:{
+      				required:"Please enter your zip code",
+      				zip_code:"Zip code has at least one letter followed by a white space, followed by at least one digit "
+      			}
+      		},
+      		submitHandler: function(form) {
+      			$('#personal_info').fadeOut("10000");
+      		}
+      	});
+	});
+	});
+
+
+
+</script>
+</head>
+<body>
+
+<h1>Personal Information</h1>
+<form name="personal_info" id="personal_info">
+<table align="center" border="0">
+<tbody><tr>
+	<td class="name">
+		Name:
+	</td>
+	<td class="data">
+		<input type="text" name="name_text" id="name_text" width="20" maxlength="40" size="20">
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		E-mail address:
+	</td>
+	<td class="data">
+		<input type="email" name="email_text" id="email_text" width="20" maxlength="40" size="20">
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		Date of Birth (DD/MM/YYYY):
+	</td>
+	<td class="data">
+		<input type="text" name="dob_text" id="datepicker">
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		Gender:
+	</td>
+	<td class="data">
+		<select name="select_gender" id="select_gender">
+			<option value=""></option>
+			<option value="F">Female</option>
+			<option value="M">Male</option>
+		</select>
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		Street address (line 1):
+	</td>
+	<td class="data">
+		<input type="text" name="addr1_text" id="addr1_text" width="6" size="6" maxlength="5">
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		Street address (line 2):
+	</td>
+	<td class="data">
+		<input type="text" name="addr2_text" id="addr2_text" width="6" size="6" maxlength="5">
+</tr>
+<tr>
+	<td class="name">
+		City:
+	</td>
+	<td class="data">
+		<input type="text" name="city_text" id="city_text" width="6" size="6" maxlength="5">
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		ZIP code:
+	</td>
+	<td class="data">
+		<input type="text" name="zip_text" id="zip_text" width="6" size="6" maxlength="5">
+	</td>
+
+</tr>
+<tr>
+	<td class="name">
+		<!--<input type="button" value="Submit" onclick="validateForm()"> if type="submit", on validation error clears the entire form -->
+		<input type="submit" value="Submit">
+	</td>
+	<td class="data">
+		<input type="reset" value="Clear">
+	</td>
+</tr>
+</tbody></table>
+</form>
+
+</body>
+</html>
