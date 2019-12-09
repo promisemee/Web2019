@@ -1,0 +1,10 @@
+CREATE TABLE FormValidation(
+	Name	VARCHAR(20),
+	Email	VARCHAR(20),
+	DOB		VARCHAR(20),
+	Gender 	VARCHAR(20),
+	S1		VARCHAR(20),
+	S2		VARCHAR(20),
+	City 	VARCHAR(20),
+	Zip		VARCHAR(20)
+)
